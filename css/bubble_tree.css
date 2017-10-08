@@ -1,0 +1,68 @@
+body {
+	background: #eee;
+}
+
+.wrap {
+	width: 98%;
+	margin: 10px auto;
+	max-width: 1400px;
+	min-width: 600px;
+	background: #fff;
+	overflow: hidden;
+	color: #415559;
+}
+
+.wrap .title {
+	text-transform: uppercase;
+	padding: 30px 20px 20px;
+	margin:0;
+	border-bottom: 1px solid #eee;
+}
+
+#control_modules {
+	list-style:none;
+	padding:0;
+	margin: 10px 0 20px;
+}
+
+#control_modules li {
+	width: 98%;
+	margin: 0 auto;
+	border-bottom: 1px dashed #eee;
+}
+
+/******** ****/
+.bubbleLine circle.ball {
+	fill: #fff;
+	cursor: pointer;
+}
+
+.bubbleLine .ball_value {
+	font-weight:bold;
+	text-anchor: middle;
+	cursor: pointer;
+}
+
+.bubbleLine .ball_line,
+.detailLines .ball_line_detail {
+	stroke: #415559;
+	stroke-width: 1px;
+}
+
+.detailLine circle.ball {
+	fill: #fff;
+}
+
+.detailLine .ball_value {
+	font-weight:bold;
+	text-anchor: middle;
+}
+
+.bubbleLine .ball_line.hidden {
+	opacity: 0;
+}
+
+.bubbleLine .ball_label,
+.detailLine  .ball_label {
+	text-anchor: middle;
+}

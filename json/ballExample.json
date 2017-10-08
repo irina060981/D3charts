@@ -1,0 +1,332 @@
+[
+  [
+    {
+      "color": "#FF420E",
+      "percentage": "100",
+      "title": "AQRBRA- Asset Quality review BRA",
+      "values": [
+        {
+          "color": "#F98866",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#FF420E",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#FF420E",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#F98866",
+      "percentage": "100",
+      "title": "Ingesta",
+      "values": [
+        {
+          "color": "#F98866",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#F98866",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#F98866",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#89DA59",
+      "percentage": "100",
+      "title": "Transformación",
+      "values": [
+        {
+          "color": "#89DA59",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#89DA59",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#89DA59",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#80BD9E",
+      "percentage": "100",
+      "title": "Explotación",
+      "values": [
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "G .Parquet"
+        },
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "Tipos Cambio"
+        },
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "Generación AQR"
+        },
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "Historicidad AQR"
+        },
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "Inter GS"
+        },
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "V. Funcionales"
+        },
+        {
+          "color": "#80BD9E",
+          "percentage": "100",
+          "title": "Envio BCE"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "color": "#CD5C5C",
+      "percentage": "100",
+      "title": "AQRBRA- Asset Quality review BRA",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#CD5C5C",
+      "percentage": "100",
+      "title": "Ingesta",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#7FFF00",
+      "percentage": "100",
+      "title": "Transformación",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#7FFF00",
+      "percentage": "100",
+      "title": "Explotación",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "G .Parquet"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "Tipos Cambio"
+        },
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "Generación AQR"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "Historicidad AQR"
+        },
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "Inter GS"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Funcionales"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "Envio BCE"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "color": "#CD5C5C",
+      "percentage": "100",
+      "title": "AQRBRA- Asset Quality review BRA",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#CD5C5C",
+      "percentage": "100",
+      "title": "Ingesta",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#7FFF00",
+      "percentage": "100",
+      "title": "Transformación",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "I.produ"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Técnicas"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "I.Referencia"
+        }
+      ]
+    },
+    {
+      "color": "#7FFF00",
+      "percentage": "100",
+      "title": "Explotación",
+      "values": [
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "G .Parquet"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "Tipos Cambio"
+        },
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "Generación AQR"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "Historicidad AQR"
+        },
+        {
+          "color": "#CD5C5C",
+          "percentage": "100",
+          "title": "Inter GS"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "V. Funcionales"
+        },
+        {
+          "color": "#7FFF00",
+          "percentage": "100",
+          "title": "Envio BCE"
+        }
+      ]
+    }
+  ]
+]

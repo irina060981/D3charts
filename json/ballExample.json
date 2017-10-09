@@ -13,7 +13,24 @@
         {
           "color": "#FF420E",
           "percentage": "100",
-          "title": "V. Técnicas"
+          "title": "V. Técnicas",
+              "values": [
+                {
+                  "color": "#F98866",
+                  "percentage": "100",
+                  "title": "I.produ"
+                },
+                {
+                  "color": "#FF420E",
+                  "percentage": "100",
+                  "title": "V. Técnicas"
+                },
+                {
+                  "color": "#FF420E",
+                  "percentage": "100",
+                  "title": "I.Referencia"
+                }
+              ]
         },
         {
           "color": "#FF420E",
@@ -40,7 +57,24 @@
         {
           "color": "#F98866",
           "percentage": "100",
-          "title": "I.Referencia"
+          "title": "I.Referencia",
+          "values": [
+                {
+                  "color": "#F98866",
+                  "percentage": "100",
+                  "title": "I.produ"
+                },
+                {
+                  "color": "#FF420E",
+                  "percentage": "100",
+                  "title": "V. Técnicas"
+                },
+                {
+                  "color": "#FF420E",
+                  "percentage": "100",
+                  "title": "I.Referencia"
+                }
+              ]
         }
       ]
     },

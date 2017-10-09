@@ -5,7 +5,7 @@ body {
 .wrap {
 	width: 98%;
 	margin: 10px auto;
-	max-width: 1400px;
+	//max-width: 1400px;
 	min-width: 600px;
 	background: #fff;
 	overflow: hidden;
@@ -32,7 +32,31 @@ body {
 }
 
 /******** ****/
-.bubbleLine circle.ball {
+
+.ballGroup {
+	cursor: pointer;
+}
+
+.detailGroup > .ballGroup {
+	cursor: default;
+}
+
+.ballGroup circle {
+	fill: #fff;
+}
+
+.ballGroup .ball_value {
+	font-weight:bold;
+	text-anchor: middle;
+}
+
+.ballGroup .ball_label {
+	text-anchor: middle;
+}
+
+/*
+.bubbleLine circle {
+	.ball {
 	fill: #fff;
 	cursor: pointer;
 }
@@ -65,4 +89,4 @@ body {
 .bubbleLine .ball_label,
 .detailLine  .ball_label {
 	text-anchor: middle;
-}
+}*/

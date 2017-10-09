@@ -5,15 +5,17 @@
     'use strict';
 
     d3.bubbleTree = function(params) {
-    	var chartDom, circlesSVG;
-    	var circleDist, baseCircleR;
-    	var svgBaseHeight;
+    	var $chartDom, $mainSVG;
 
-    	var baseKoef = 0.5;
+    	var circleDiametr, bigRadius;
 
-    	var defaultParams = {
-    		
+    	var defaultParams={
+    		blackColor: '#415559',
+    		margin: 20,
+    		minFontSize: 6
     	};
+
+    	var baseSVGWidth, baseSVGHeight;
 
 		function checkParams() {
 			Object.keys(defaultParams).forEach(function(prop){
@@ -23,360 +25,17 @@
 			});
 		}
 
-		function changeHeightSVG(newHeight) {
-			var height = svgBaseHeight;
-			var bubbleLineY = circleDist/2;
+		function addMarkersDefinition(radius){
+			var $svg = this;
 
-			if (newHeight !== undefined) {
-				height = Math.max(newHeight, height);	
-
-				if (height>svgBaseHeight) {
-					bubbleLineY = height/2;
-				}
-				
-			} 
-
-			circlesSVG.attr('height', height);
-
-			circlesSVG.selectAll('.bubbleLine')
-				.attr("transform", "translate(" + circleDist/2 + "," + bubbleLineY + ")");
-		}
-
-		function addDetailLine(d, i, arr, littlCircleR, strokeHeight) {
-			var detailGroup = this;
-
-			var detailLine = detailGroup
-								.selectAll('.detailLine')
-								.data(d.values).enter()
-								.append('g').classed('detailLine', true)
-								.attr('transform', function(data, index) { 
-									var newY = strokeHeight + index * littlCircleR * 4;
-									return 'translate(' + '0, ' + newY  + ')'; 
-								});
-
-			drawBall
-				.apply(detailLine.append('circle'), [littlCircleR]);
-
-			drawTextInBall
-				.apply(detailLine.append('text'), [littlCircleR])
-				.attr('transform', function(d, index){
-												var newY = littlCircleR*baseKoef/4;
-												return "translate(" + 0 + "," + newY + ")";
-											});
-
-			drawTextUnderBall
-				.apply(detailLine.append('text'), [littlCircleR])
-				.attr('transform', function(d, index){
-												var newY = littlCircleR + littlCircleR * baseKoef;
-												return "translate(" + 0 + "," + newY + ")";
-											});
-			
-		}
-
-		function redrawMiddleLine(yPos) {
-
-			circlesSVG.selectAll('.ball_line.hidden').classed('hidden', false);
-
-			circlesSVG
-				.selectAll('.ball_line.item'+yPos)
-				.classed('hidden', true);
-		}
-
-
-
-			/*blGroups.selectAll('.ball_line')
-						.data(d3.ticks(0,1, params.dataset.length-1) ).enter()
-						.append('line')
-							.attr('class', function(d,i) { return 'item'+i; })
-							.classed('ball_line', true)
-							.attr('transform', function(d, index){
-											var newY = baseCircleR * baseKoef/4;
-											var newX = index*(circleDist*2);
-											return "translate(" + newX + "," + newY + ")";
-										})
-							.attr('x1', circleDist/2)
-							.attr('x2', circleDist*3/2)
-							.attr('y1', 0)
-							.attr('y2', 0)
-							.attr("marker-start", "url(#markerCircle)")
-							.attr("marker-end", "url(#markerArrow)");*/
-
-		function addMiddleHorizontalConnections(detailGroup, yPos, bigDist, littleR) {
-			
-			//circlesSVG.selectAll('.ball_line_detail.hidden').classed('hidden', true);
-
-			var detailedLines=detailGroup
-								.append('g')
-								.classed('detailLines', true);
-			detailedLines
-				.selectAll('.ball_line_detail.item'+yPos)
-				.data([1,2]).enter()
-					.append('line')
-						.attr('class', function(d,i) { return 'item'+i; })
-						.classed('ball_line_detail', true)
-						.attr('x1', function(d) {
-							if (d===1) {
-								return bigDist/2;	
-							} else {
-								return bigDist*3/2;	
-							}
-						})
-						.attr('x2', function(d){
-							if (d===1) {
-								return bigDist - littleR*2;
-							} else {
-								return bigDist + littleR*2;
-							}
-						})
-						.attr('y1', 0)
-						.attr('y2', 0)
-						.attr("marker-start", "url(#markerCircle)")
-						.attr("marker-end", "url(#markerArrow)")
-						.attr('transform', function(){
-											var newY = Math.round(baseCircleR * baseKoef/4);
-											var newX = yPos*(bigDist*2);
-											return "translate(" + 0 + "," + newY + ")";
-										});
-		}
-
-		function createDetailsBlock(d, i, arr) {
-			circlesSVG.selectAll('.detailGroup').remove();
-
-			var yPos = (i===arr.length-1) ? i-1 : i;
-
-			var marginGroup = circleDist/2 * 0.1;
-			
-			
-			var littlCircleR = baseCircleR/(baseKoef*4);
-			var strokeHeight = Math.floor(littlCircleR*baseKoef/2);
-
-			var detailGroupX = yPos*(circleDist*2) + circleDist*3/2;
-
-			var detailGroup = circlesSVG
-								.append('g')
-									.classed('detailGroup', true)
-										.attr("transform", "translate(" + detailGroupX + "," + littlCircleR + ")");
-
-			addDetailLine.apply(detailGroup, [d, i, d.values, littlCircleR, strokeHeight]);
-
-			var newHeight = strokeHeight * 2 + littlCircleR*2*d.values.length + littlCircleR*2*(d.values.length-1) + littlCircleR;	
-
-			redrawMiddleLine(yPos);
-
-			addMiddleHorizontalConnections(detailGroup, yPos, circleDist, littlCircleR);
-
-			changeHeightSVG(newHeight);
-		}
-
-		function ballClick(d, i, arr) {
-			var evt=d3.event;
-
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.stopImmediatePropagation();
-
-			var targetClasses = d3.select(evt.target).attr('class').replace('ball_value','').replace('ball','').replace(' ','');
-
-			//console.log('targetClasses', targetClasses, targetClasses.indexOf('active'));
-
-			if (targetClasses.indexOf('active') === -1) {
-				console.log('action ....');
-
-				d3.selectAll('.ball_value.active').classed('active', false);
-				d3.selectAll('.ball.active').classed('active', false);
-
-				d3.selectAll('.ball_value.'+targetClasses).classed('active', true);
-				d3.selectAll('.ball.'+targetClasses).classed('active', true);
-
-				createDetailsBlock(d,i, arr);
-			}
-		}
-
-		function drawBall(radius) {
-			var circleObj=this;
-
-			return circleObj
-					.classed('ball', true)
-					.attr('r', radius)
-					.style("stroke", function(d) { 
-						return d.color.replace('##', '#');
-					})
-					.style("stroke-width", Math.floor(radius*baseKoef/2)+"px")
-					.on("click", ballClick);
-		}
-
-		function addBalls() {
-			var percentGroup=this;
-
-			var circleObj = percentGroup
-								.append('g')
-								.classed('balls', true)
-									.selectAll('.ball')
-									.data(params.dataset).enter()
-									.append('circle')
-										.attr('class', function(d,i) { return 'item'+i; });
-			drawBall
-				.apply(circleObj, [baseCircleR])
-				.attr('transform', function(d, index){
-											var newY = 0;
-											var newX = index*(circleDist*2);
-											return "translate(" + newX + "," + newY + ")";
-										})
-				.on("click", ballClick);
-
-			return percentGroup;
-
-		}
-
-		function drawTextInBall(radius) {
-			var textObj=this;
-
-			return textObj
-						.classed('ball_value', true)
-						.text(function(d){
-							return d.percentage + '%';
-						})
-						.style('fill', function(d) { 
-								return d.color.replace('##', '#');
-							})
-						.style('font-size', radius/2+'px');
-		}
-
-		function addValueTextToBalls() {
-			var percentGroup=this;
-
-			var textObj = percentGroup
-							.append('g')
-							.classed('ball_values', true)
-								.selectAll('.ball_value')
-								.data(params.dataset).enter()
-								.append('text')
-									.attr('class', function(d,i) { return 'item'+i; });
-			drawTextInBall.apply(textObj, [baseCircleR])					
-							.attr('transform', function(d, index){
-												var newY = baseCircleR * baseKoef/4;
-												var newX = index*(circleDist*2);
-												return "translate(" + newX + "," + newY + ")";
-											})
-							.on("click", ballClick);	
-
-			return percentGroup;		
-		}
-
-		function divideTextObjToLines(textObjs, width) {
-			textObjs.each(function(){
-				var textObj = d3.select(this);
-				var text = textObj.text();
-				textObj.text('');
-				var words = text.split(/\s+/).reverse();
-				var line=[];
-
-				var tspanObj = textObj
-								.append('tspan')
-									.attr('x', 0)
-									.attr('y', 0)
-									.attr('dy', 0);
-				
-				var word, lineHeight=1.1, lineNumber=0;
-
-				//debugger;
-
-				while (word = words.pop()) {
-					line.push(word);		
-
-					if (tspanObj.nodes()[0].getComputedTextLength() > width) {
-						line.pop();
-						line=[word];
-
-						lineNumber++;
-
-						tspanObj = textObj
-								.append('tspan')
-									.attr('x', 0)
-									.attr('y', 0)
-									.attr('dy', lineNumber * lineHeight + 'em')
-									.text(word);
-					} else {
-						tspanObj.text(line.join(' '));
-					}
-				}
-			});
-
-		}
-
-		function drawTextUnderBall(radius) {
-			var textObj=this;
-
-			return textObj
-						.classed('ball_label', true)
-						.text(function(d){
-							return d.title;
-						})
-						.style('font-size', radius*baseKoef*0.8+'px');
-		}
-
-		function addLabelTextUnderBalls() {
-			var percentGroup=this;
-
-			var textObj = percentGroup
-							.append('g')
-							.classed('ball_labels', true)
-								.selectAll('.ball_label')
-								.data(params.dataset).enter()
-								.append('text');
-
-			drawTextUnderBall.apply(textObj, [baseCircleR])
-					.attr('transform', function(d, index){
-								var newY = baseCircleR + baseCircleR * baseKoef;
-								var newX = index*(circleDist*2);
-								return "translate(" + newX + "," + newY + ")";
-							})
-					.call(divideTextObjToLines, baseCircleR*baseKoef*5);
-
-			//divideTextObjToLines.apply(textObj, [baseCircleR*2.5])
-			return percentGroup;		
-		}
-
-		function addLinesBetweenBalls() {
-			var percentGroup=this;
-
-			var blGroups = percentGroup
-							.append('g')
-							.classed('ball_lines', true);
-
-			//console.log('d3.ticks', d3.ticks(0,1, params.dataset.length-1));
-
-			blGroups.selectAll('.ball_line')
-						.data(d3.ticks(0,1, params.dataset.length-1) ).enter()
-						.append('line')
-							.attr('class', function(d,i) { return 'item'+i; })
-							.classed('ball_line', true)
-							.attr('transform', function(d, index){
-											var newY = baseCircleR * baseKoef/4;
-											var newX = index*(circleDist*2);
-											return "translate(" + newX + "," + newY + ")";
-										})
-							.attr('x1', circleDist/2)
-							.attr('x2', circleDist*3/2)
-							.attr('y1', 0)
-							.attr('y2', 0)
-							.attr("marker-start", "url(#markerCircle)")
-							.attr("marker-end", "url(#markerArrow)");
-
-			return percentGroup;		
-		}
-
-		function addArrowDefinition(){
-			var svgPart = this;
-
-			var markerSize = baseCircleR/5;
+			var markerSize = radius/5;
 
 			var arg1 = Math.round((markerSize-1)/6); //2
 			var arg2 = Math.round((markerSize-1)/2); //6
 			var arg3 = Math.round(markerSize-(markerSize-1)/6); //10
 			var arg4 = arg3-1;
 			
-			var defs = svgPart.append('defs');
+			var defs = $svg.append('defs');
 
 			defs.append('marker')
 				.attr('id', 'markerArrow')
@@ -388,14 +47,9 @@
 				.attr('orient', 'auto')
 					.append('path')
 					.attr('d', 'M' + arg1 + ',' + arg1+ ' L' + arg1 + ',' + arg4 + ' L' + arg3 + ',' + arg2 + ' L' + arg1 + ',' + arg1)
-					.style('fill', '#415559');
+					.style('fill', params.blackColor);
 
-			/*<marker id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
-		           orient="auto">
-		        <path d="M2,2 L2,11 L10,6 L2,2" style="fill: #000000;" />
-		    </marker>*/
-
-			var markerCircleSize = baseCircleR/20;
+			var markerCircleSize = radius/20;
 
 			defs.append('marker')
 				.attr('id', 'markerCircle')
@@ -409,76 +63,334 @@
 					.attr('cx', markerCircleSize*2-1)
 					.attr('cy', markerCircleSize*2-1)
 					.style('stroke', 'none')
-					.style('fill', '#415559');
+					.style('fill', params.blackColor);
 
 
-			return svgPart;
+			return $svg;
+		}
+
+		function changeHeightSVG(newHeight) {
+			var height = baseSVGHeight;
+			var bubbleLineY = Math.round(circleDiametr*0.7);
+
+			if (newHeight !== undefined) {
+				height = Math.max(newHeight, height);	
+
+				if (height>baseSVGHeight) {
+					bubbleLineY = height/2;
+				}
+				
+			} 
+
+			$mainSVG.attr('height', height);
+
+			var svgX = circleDiametr/2 + params.margin;
+
+			$mainSVG.selectAll('.bubbleLine')
+				.attr("transform", "translate(" + svgX + "," + bubbleLineY + ")");
+		}
+
+		function divideTextObjToLines(textObjs, width, dy) {
+			textObjs.each(function(){
+				var textObj = d3.select(this);
+				var text = textObj.text();
+				textObj.text('');
+				var words = text.split(/\s+/).reverse();
+				var line=[];
+
+				var tspanObj = textObj
+								.append('tspan')
+									.classed('ball_label_span', true)									
+									.attr('x', 0)
+									.attr('y', 0)
+									.attr('dy', dy+'px');
+				
+				var word, lineHeight=dy*2, lineNumber=0;
+
+				while (word = words.pop()) {
+					line.push(word);		
+
+					if (tspanObj.nodes()[0].getComputedTextLength() > width) {
+						line.pop();
+						line=[word];
+
+						lineNumber++;
+
+						tspanObj = textObj
+								.append('tspan')
+									.classed('ball_label_span', true)
+									.attr('x', 0)
+									.attr('y', 0)
+									.attr('dy', lineNumber * lineHeight + dy + 'px')
+									.text(word);
+					} else {
+						tspanObj.text(line.join(' '));
+					}
+				}
+			});
+		}
+
+		function drawValueBall(radius, dataset) {			
+			var $ballsLine = this;
+			var fontSize;
+
+			var $ballsGroup = $ballsLine
+								.selectAll('.ballGroup')
+								.data(dataset).enter()
+									.append('g')
+										.attr('class', function(d,i) { return 'item'+i; })
+										.classed('ballGroup', true);
+
+			$ballsGroup.append('circle')
+					.attr('class', function(d,i) { return 'item'+i; })
+					.classed('ball', true)
+					.attr('r', radius)
+					.style("stroke", function(d) { 
+						return d.color.replace('##', '#');
+					})
+					.style("stroke-width", Math.floor(radius * 0.2)+"px");
+
+			fontSize = radius/2;
+
+			$ballsGroup.append('text')
+					.attr('class', function(d,i) { return 'item'+i; })
+					.classed('ball_value', true)
+
+					.text(function(d){
+						return d.percentage + '%';
+					})
+					.style('fill', function(d) { 
+							return d.color.replace('##', '#');
+						})
+					.attr('dy', fontSize/4+'px')
+					.style('font-size', fontSize+'px');
+
+			fontSize = Math.max(params.minFontSize,radius/4);
+
+			$ballsGroup.append('text')
+					.attr('class', function(d,i) { return 'item'+i; })
+					.classed('ball_label', true)
+					.text(function(d){
+						return d.title;
+					})
+					.style('font-size', fontSize +'px')
+					.attr("transform", "translate(0," + (radius * 1.4) + ")")
+					.call(divideTextObjToLines, radius*2.1, fontSize/2);
+
+			return $ballsGroup;
+		}
+
+		function defineDetailsHeight(){
+			var element = $mainSVG.selectAll('.detailGroup').node();
+			var maxHeight = 0;
+
+			$mainSVG.selectAll('.detailGroup').each(function(){
+				maxHeight = Math.max(this.getBoundingClientRect().height, maxHeight);
+			})
+			//debugger;
+			//return element.getBoundingClientRect().height + circleDiametr*0.4;
+			return maxHeight + circleDiametr*0.4;
+		}
+
+		function drawDetailBlock(detailGroupX, detailGroupY, radius, parentIndex, values){
+			var $container = this;
+
+			var $detailGroup = $container
+								.append('g')
+									.attr('class', 'item' + parentIndex)
+									.classed('detailGroup', true)
+									.attr('transform', function(){
+
+										return 'translate(' + detailGroupX + ', '  + detailGroupY + ')';
+									});
+
+			return drawValueBall.apply($detailGroup, [radius/2, values])
+								.attr('transform', function(dat, ind){
+
+											var newY = ind * radius * 1.6;
+											var newX = 0;
+
+											return "translate(" + newX + "," + newY + ")";
+										});
+
+		}
+
+		function createDetailsBlock(layer,d,i, arr, radius, parentIndex) {
+			var yPos, detailGroupX, detailGroupY, radiusF;
+			var $container, $groups;
+
+			if (layer === 'layer1') {
+				yPos = (i===arr.length-1) ? i-1 : i;
+				//detailGroupX = yPos*(radius*6) + radius*4 + radius*0.4;
+				//var newX = i*(circleDiametr*3);
+				detailGroupX = yPos*(circleDiametr*3) + circleDiametr*2 + params.margin;
+				detailGroupY = radius * 0.75;
+
+				$container = $mainSVG;
+				if (i===arr.length-1) {
+					$container.selectAll(".detailGroup.item"+(i-1)).remove();
+				}
+
+				radiusF = circleDiametr/2;
+
+			} else if (layer === 'layer2') {
+				detailGroupX = circleDiametr/2 + circleDiametr/5;
+				detailGroupY = -(radius*d.values.length+ radius * 0.2)/2 ;
+
+				$container = $mainSVG.selectAll('.detailGroup.item'+parentIndex).selectAll('.ballGroup.active');
+
+				radiusF = circleDiametr/4;
+			} else {
+				return null;
+			}
+			
+			$groups  = drawDetailBlock.apply($container, [detailGroupX, detailGroupY , radiusF, i, d.values]);
+			changeHeightSVG(defineDetailsHeight());
+
+			if (layer === 'layer1') {
+				$groups
+					.style('cursor', function(data) {
+						if (data.values !== undefined) {
+							return 'pointer';
+						} else {
+							return 'default';
+						}
+					})
+					.on("click", detailBallGroupClick);
+			}
 		}
 
 		function hideAllDetails(){
-			circlesSVG.selectAll('.detailGroup').remove();
+			$mainSVG.selectAll('.detailGroup').remove();
 			changeHeightSVG();
 
-			d3.selectAll('.ball_value').classed('active', false);
-			d3.selectAll('.ball').classed('active', false);
-
-			circlesSVG.selectAll('.ball_line.hidden').classed('hidden', false);
+			d3.selectAll('.bubbleLine.layer1').selectAll('.ballGroup').classed('active', false);
 		}
 
-		function drawCirclesGroup() {
-			var cntDist = params.dataset.length * 2 -1;
-			var totalWidth = chartDom.nodes()[0].offsetWidth;
+		function detailBallGroupClick(d, i, arr) {
+			var targetItem, $targetObject;
+			var evt=d3.event;
 
-			//console.log('totalWidth - ', totalWidth, params.dataset);
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.stopImmediatePropagation();
 
-			circleDist = totalWidth/cntDist;
-			baseCircleR = circleDist/2 * baseKoef;
+			//console.log('detailBallGroupClick - ', d, i, arr);
+			
+			if (d.values !== undefined) {
+				$targetObject = defineCorrectTarget(evt.target);
 
-			svgBaseHeight = circleDist * baseKoef *2.6;
+				targetItem = $targetObject.attr('class').replace(/^.*item(\d+).*$/,"$1");
 
-			circlesSVG = chartDom
+				if ( d3.selectAll('.detailGroup').selectAll('.ballGroup.item'+targetItem).attr('class').indexOf('active')===-1 ) {
+					
+					d3.selectAll('.detailGroup').selectAll('.ballGroup.item'+targetItem).classed('active', true);
+					createDetailsBlock('layer2', d,i, arr, circleDiametr/4, targetItem);
+				}
+			}
+			
+		}
+
+		function defineCorrectTarget(target) {
+			var $targetObject = d3.select(target);
+
+			if ($targetObject.attr('class').indexOf('ball_label_span') > -1) {
+				$targetObject = $targetObject.select(function() { return this.parentNode; });				
+			}
+
+			return $targetObject;
+		}
+
+		function bigBallGroupClick(d, i, arr){
+			var targetItem, $targetObject;
+			var evt=d3.event;
+
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.stopImmediatePropagation();
+
+			//console.log('click target - ', d3.select(evt.target).attr('class'));
+			
+			$targetObject = defineCorrectTarget(evt.target);		
+
+			targetItem = $targetObject.attr('class').replace(/^.*item(\d+).*$/,"$1");
+
+			if ( d3.selectAll('.bubbleLine.layer1').selectAll('.ballGroup.item'+targetItem).attr('class').indexOf('active')===-1 ) {
+				
+				d3.selectAll('.bubbleLine.layer1').selectAll('.ballGroup').classed('active', false);
+				d3.selectAll('.bubbleLine.layer1').selectAll('.ballGroup.item'+targetItem).classed('active', true);
+				createDetailsBlock('layer1', d,i, arr, circleDiametr/2);
+			}
+		}
+
+		function addBigBallsInLine(radius) {
+			var $bigBallsGroup = this;
+			//debugger;
+			var $balls = $bigBallsGroup
+								.append('g')
+								.classed('balls', true);
+								
+			drawValueBall.apply($balls, [radius, params.dataset])
+								.attr('transform', function(d, i){
+											var newY = 0;
+											var newX = i*(circleDiametr*3);
+
+											return "translate(" + newX + "," + newY + ")";
+										})
+								.on("click", bigBallGroupClick);
+										
+		}
+
+		function createSVG(){
+			$chartDom.selectAll("*").remove();	
+
+			baseSVGWidth = $chartDom.nodes()[0].offsetWidth;
+			circleDiametr = Math.round((baseSVGWidth-2*params.margin)/(params.dataset.length + (params.dataset.length-1) * 2));
+			bigRadius = Math.min(circleDiametr/2, 64);
+
+			baseSVGHeight = Math.round(bigRadius*2 + bigRadius + bigRadius);
+
+			$mainSVG = $chartDom
 						.append('svg')
-							.attr('height', svgBaseHeight)
-							.attr('width', totalWidth);
+							.attr('height', baseSVGHeight)
+							.attr('width', baseSVGWidth);
 
-			addArrowDefinition.apply(circlesSVG);
+			addMarkersDefinition.apply($mainSVG, [circleDiametr/2]);
+		
+		}
 
-			var percentGroup = circlesSVG
-						    	.append('g')
-						    		.classed('bubbleLine', true)
-						    		.attr("transform", "translate(" + circleDist/2 + "," + circleDist/2 + ")");
+		function addChart(){
+			var $bigBallsGroup = $mainSVG
+					    	.append('g')
+					    		.classed('bubbleLine', true)
+					    		.classed('layer1', true)
+					    		.attr("transform", "translate(" + (circleDiametr/2 + params.margin) + "," + Math.round(circleDiametr*0.7) + ")");
 
-			addBalls.apply(percentGroup);
+			
+			addBigBallsInLine.apply($bigBallsGroup, [bigRadius]);
 
-			addValueTextToBalls.apply(percentGroup);
-
-			addLinesBetweenBalls.apply(percentGroup);
-
-			addLabelTextUnderBalls.apply(percentGroup);
-
-			circlesSVG.on("click", hideAllDetails);
+			$mainSVG.on("click", hideAllDetails);
 		}
 
 		function draw() {
+			createSVG();
 
-			chartDom.selectAll("*").remove();
-			drawCirclesGroup(chartDom);
+			addChart();
 
-			return chartDom;
+			return $chartDom;
 		}
 
-		function init() {
+    	function init() {
 			checkParams();			
 		}
 		/********** init point ****************/
 
-		chartDom = this;
+		$chartDom = this;
 		init();
 
 		return {
 			draw: draw
 		};
-
     };
 
 }());

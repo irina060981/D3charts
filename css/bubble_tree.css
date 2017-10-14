@@ -54,6 +54,21 @@ body {
 	text-anchor: middle;
 }
 
+.bubbleLine .ball_line,
+.detailLines .ball_line_detail,
+.detailGroup .leftLine {
+	stroke: #415559;
+	stroke-width: 1px;
+}
+
+line.hidden {
+	opacity: 0;
+}
+
+.bubbleLine .ball_line.hidden {
+	opacity: 0;
+}
+
 /*
 .bubbleLine circle {
 	.ball {
@@ -82,9 +97,7 @@ body {
 	text-anchor: middle;
 }
 
-.bubbleLine .ball_line.hidden {
-	opacity: 0;
-}
+
 
 .bubbleLine .ball_label,
 .detailLine  .ball_label {

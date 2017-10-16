@@ -953,7 +953,13 @@
 				if ($detailGrop.selectAll('.detailGroup').nodes().length === 0) {
 					x = diff + detailGroupWidth/2 + svgParams.circleL1.radius;
 				} else {
-					leftLineWIdth = $detailGrop.selectAll('.layer2.centerAlign').selectAll('.innerBallGroup').select('.leftLine').node().getBoundingClientRect().width*1.4;
+
+					if ($detailGrop.selectAll('.layer2.centerAlign').nodes().length >0) {
+						leftLineWIdth = $detailGrop.selectAll('.layer2.centerAlign').selectAll('.innerBallGroup').select('.leftLine').node().getBoundingClientRect().width*1.4;
+					} else {
+						leftLineWIdth = $detailGrop.select('.layer2').selectAll('.innerBallGroup').select('.leftLine').node().getBoundingClientRect().width*1.4;
+						leftLineWIdth = leftLineWIdth + $detailGrop.selectAll('.simplyMiddle.layer2.rightLine').node().getBoundingClientRect().width*1.4;
+					}
 					
 					x = svgParams.circleL1.radius + svgParams.circleL2.radius + diff + leftLineWIdth;
 				}
@@ -965,12 +971,97 @@
 			}
 		}
 
+		function placeOddBalls($ballGroup, layer) {//nechetnoye
+			var $ballGroupForAligning, currentAligningY, groupX, groupY;
+
+			$ballGroupForAligning = defineCenterBall($ballGroup, layer);
+			$ballGroupForAligning
+				.classed('centerAlign', true);
+
+			//console.log('defined', layer, $ballGroupForAligning.node());
+
+			currentAligningY = getTranslateY($ballGroupForAligning) + getTranslateY($ballGroupForAligning.select('.innerBallGroup')) + svgParams['circleL'+(layer+1)].radius;
+
+			groupX = getTranslateX($ballGroup.select('.innerBallGroup'));
+			
+			groupY = currentAligningY-svgParams['circleL'+layer].radius+svgParams['circleL'+layer].fontSize;
+
+			$ballGroup.select('.innerBallGroup')
+				.attr('transform', 'translate('  + groupX + ',' + groupY + ')');
+		}
+
+		function placeEvenBalls($ballGroup, layer) {
+			var groupX, groupY;
+
+			var $detailGroup = $ballGroup.select('.detailGroup');
+			var groupHeight = $detailGroup.node().getBoundingClientRect().height;
+
+			groupX = getTranslateX($ballGroup.select('.innerBallGroup'));
+			groupY = Math.round(groupHeight/2-svgParams['circleL'+layer].radius)+svgParams['circleL'+layer].fontSize;
+
+			$ballGroup.select('.innerBallGroup')
+				.attr('transform', 'translate('  + groupX + ',' + groupY + ')');
+
+		}
+
+		function addLayerMiddleLines($ballGroup, layer){
+			var $rightLine, $leftLine, xLeft, xRight, y, xLeft2;
+
+			$leftLine = $ballGroup.select('.vertLine.left.layer'+layer);
+			if (layer ===2) {
+				$rightLine = $ballGroup.select('.vertLine.right.layer'+layer);
+				y = Math.round($rightLine.node().getBoundingClientRect().height/2);
+			} else {
+				y = Math.round($leftLine.node().getBoundingClientRect().height/2);
+			}
+
+			y = y + Math.round((svgParams.circleL2.radius)/2);
+			xLeft = $leftLine.attr('x1');
+
+			var $detailGroup = $ballGroup.select('.detailGroup.layer'+layer);
+			//console.log('addLayerMiddleLines', layer);
+			if ($detailGroup.selectAll('.detailGroup').nodes().length > 0) {
+				xLeft2 = Math.round(xLeft*1.2);
+			} else {
+				xLeft2 = Math.round(xLeft*1.1);
+			}
+
+			$detailGroup
+				.append('line')
+					.classed('leftLine', true)
+					.classed('layer'+layer, true)
+					.classed('simplyMiddle', true)
+					.attr('x1', xLeft)
+					.attr('x2', xLeft2)
+					.attr('y1', y)
+					.attr('y2', y)
+					.style('stroke', params.blackColor)
+					.attr("marker-end", "url(#markerCircleL1)");
+
+			if (layer ===2) {
+				xRight = $rightLine.attr('x1');
+				$detailGroup
+					.append('line')
+						.classed('rightLine', true)
+						.classed('layer'+layer, true)
+						.classed('simplyMiddle', true)
+						.attr('x1', xRight)
+						.attr('x2', Math.round(xRight*1.1))
+						.attr('y1', y)
+						.attr('y2', y)
+						.style('stroke', params.blackColor)
+						.attr("marker-end", "url(#markerCircleL1)");
+			}
+		}
+
 		function centerBigBallsInGroups(layer) {
 			var $balls = $mainSVG.selectAll('.layer' + layer + '.ballGroup');
 
 			$balls.each(function(item, i, arr){
 				var $leftLine, $rightLine, x1, x2;
 				var $ballGroupForAligning, currentAligningY, groupX, groupY, bigRadius ;
+
+				var $allBallGroups;
 				var $ballGroup = d3.select(this);
 
 
@@ -983,23 +1074,18 @@
 
 				} else {
 
-					$ballGroupForAligning = defineCenterBall($ballGroup, layer);
-					$ballGroupForAligning
-						.classed('centerAlign', true);
+					$allBallGroups = $ballGroup.select('.detailGroup').selectAll('.ballGroup.layer'+(layer+1));
 
-					//console.log('defined', layer, $ballGroupForAligning.node());
-
-					currentAligningY = getTranslateY($ballGroupForAligning) + getTranslateY($ballGroupForAligning.select('.innerBallGroup')) + svgParams['circleL'+(layer+1)].radius;
-
-					groupX = getTranslateX($ballGroup.select('.innerBallGroup'));
-					
-					groupY = currentAligningY-svgParams['circleL'+layer].radius+svgParams['circleL'+layer].fontSize;
-
-					$ballGroup.select('.innerBallGroup')
-						.attr('transform', 'translate('  + groupX + ',' + groupY + ')');
-
-					//makeMiddleLineLonger($ballGroupForAligning, i, arr, layer+1);
-					makeMiddleLineLonger($ballGroup);
+					if ($allBallGroups.nodes().length % 2 !== 0) {
+						console.log('nechetnoye', $allBallGroups.nodes().length);
+						placeOddBalls($ballGroup, layer);
+						makeMiddleLineLonger($ballGroup);
+					} else {
+						console.log('chetnoye', $allBallGroups.nodes().length);
+						placeEvenBalls($ballGroup, layer);
+						//$ballGroup.selectAll('.simplyMiddle').remove();
+						addLayerMiddleLines($ballGroup, layer+1);
+					}					
 
 					centerDetailGroupFinal($ballGroup.select('.detailGroup.layer2'));
 					

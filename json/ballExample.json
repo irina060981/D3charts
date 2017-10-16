@@ -3,39 +3,19 @@
     {
       "color": "#FF420E",
       "percentage": "100",
-      "title": "AQRBRA- Asset Quality review BRA",
+      "title": "1 AQRBRA- Asset Quality review BRA",
       "values": [
-        {
-          "color": "#F98866",
-          "percentage": "100",
-          "title": "I.produ"
-        },
         {
           "color": "#FF420E",
           "percentage": "100",
-          "title": "V. Técnicas",
+          "title": "2 V. Técnicas",
               "values": [
                 {
                   "color": "#F98866",
                   "percentage": "100",
-                  "title": "I.produ"
-                },
-                {
-                  "color": "#FF420E",
-                  "percentage": "100",
-                  "title": "V. Técnicas"
-                },
-                {
-                  "color": "#FF420E",
-                  "percentage": "100",
-                  "title": "I.Referencia"
+                  "title": "3 I.produ"
                 }
               ]
-        },
-        {
-          "color": "#FF420E",
-          "percentage": "100",
-          "title": "I.Referencia"
         }
       ]
     },

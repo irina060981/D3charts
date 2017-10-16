@@ -10,7 +10,7 @@
 
     function addcontrolModeItem(dataItem, dataIndex){
 
-    	console.log('addcontrolModeItem ... ');
+    	//console.log('addcontrolModeItem ... ');
     	
     	var $currentLi = cmBlock.append('li').attr('id', 'chart'+dataIndex,true);
 
@@ -38,7 +38,7 @@
     }
 
     function closeAllOtherDetails() {
-
+         var currentId;
         var evt=d3.event;
 
         evt.preventDefault();
@@ -48,7 +48,7 @@
         var $currentLi = getClosestLi(evt.target);
 
         if ($currentLi !== null) {
-            var currentId = parseInt($currentLi.id.replace('chart',''));
+            currentId = parseInt($currentLi.id.replace('chart',''));
 
             cmModulesArray.forEach(function($element, index){
                 //debugger;
@@ -63,7 +63,7 @@
 
     d3.json("json/ballExample.json", function(dataAll) {
 
-    	dataAll.slice(0,1).forEach(function(dataItem, dataIndex){
+    	dataAll.slice(0,2).forEach(function(dataItem, dataIndex){
 
     		addcontrolModeItem(dataItem, dataIndex);
 

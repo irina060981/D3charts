@@ -703,8 +703,8 @@
 						.attr('x1', x1)
 						.style('stroke', params.blackColor)
 						.style('stroke-width', '1px')
-						.attr('marker-start', 'url(#markerCircleL1)')
-						.attr('marker-end', 'url(#markerCircleL1)');
+						.attr('marker-start', 'url(#markerCircleL1)');
+						//.attr('marker-end', 'url(#markerCircleL1)');
 
 					if (withAnimation === true) {
 						addAnimationToLine($line, Math.abs(x2-x1));
@@ -744,8 +744,8 @@
 									.attr('x1', x1)
 									.style('stroke', params.blackColor)
 									.style('stroke-width', '1px')
-									.attr('marker-start', 'url(#markerCircleL1)')
-									.attr('marker-end', 'url(#markerCircleL1)')
+									.attr('marker-start', 'url(#markerCircleL1)');
+									//.attr('marker-end', 'url(#markerCircleL1)')
 									;
 				}				
 			});
@@ -1050,7 +1050,7 @@
 						.attr('y1', y)
 						.attr('y2', y)
 						.style('stroke', params.blackColor)
-						.attr("marker-end", "url(#markerCircleL1)");
+						.attr("marker-end", "url(#markerArrowL1)");
 			}
 		}
 

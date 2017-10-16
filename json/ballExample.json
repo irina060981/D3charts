@@ -161,22 +161,22 @@
     {
       "color": "#89DA59",
       "percentage": "100",
-      "title": "Transformación",
+      "title": "1Transformación",
       "values": [
         {
           "color": "#89DA59",
           "percentage": "100",
-          "title": "I.produ"
+          "title": "2I.produ"
         },
         {
           "color": "#89DA59",
           "percentage": "100",
-          "title": "V. Técnicas"
+          "title": "2V. Técnicas"
         },
         {
           "color": "#89DA59",
           "percentage": "100",
-          "title": "I.Referencia"
+          "title": "2I.Referencia"
         }
       ]
     },

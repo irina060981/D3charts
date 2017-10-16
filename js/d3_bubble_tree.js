@@ -14,7 +14,16 @@
     		maxRadius: 50,
     		blackColor: '#415559',
     		maxFontSize: 16,
-    		minFontSize: 5
+    		minFontSize: 5,
+    		circleRL1_radius: 40,
+    		circleRL1_font_size: 17,
+    		circleRL2_radius: 26,
+    		circleRL2_font_size: 12, 
+    		transitionDuration: 900,
+    		alertMessage: 'Alert message! Alert message! Alert message!',
+    		alertBackground: '#ff0090',
+    		alertColor: '#fff',
+    		alertStroke: d3.color('#ff0090').darker(1)
     		/*
     		minFontSize: 6,
     		labelDistanceKoef: 1.8,
@@ -85,12 +94,12 @@
 			baseCircleDist = Math.round((width-2*params.margin) / params.dataset.length);
 			leftSpace = baseCircleDist;
 
-			circleRL1 = Math.min(params.maxRadius, Math.round(baseCircleDist/(3*2)));
-			circleRL2 = Math.round(circleRL1*0.65);
+			circleRL1 = params.circleRL1_radius || Math.min(params.maxRadius, Math.round(baseCircleDist/(3*2)));
+			circleRL2 = params.circleRL2_radius || Math.round(circleRL1*0.65);
 			circleRL3 = Math.round(circleRL2*0.65);
 			//debugger;
-			fontSizeL1 = Math.max(Math.min(Math.round(circleRL1/3), params.maxFontSize), params.minFontSize);
-			fontSizeL2 = Math.max(Math.min(Math.round(circleRL2/3), params.maxFontSize), params.minFontSize);
+			fontSizeL1 = params.circleRL1_font_size || Math.max(Math.min(Math.round(circleRL1/3), params.maxFontSize), params.minFontSize);
+			fontSizeL2 = params.circleRL2_font_size || ath.max(Math.min(Math.round(circleRL2/3), params.maxFontSize), params.minFontSize);
 			fontSizeL3 = Math.max(Math.min(Math.round(circleRL3/3), params.maxFontSize), params.minFontSize);
 
 			height = circleRL1*2 + 2*params.margin + fontSizeL1*2;
@@ -118,10 +127,11 @@
 			if (withAnimation === true) {
 				$svg
 					.transition()
-						.attr('height', height)
+						.duration(params.transitionDuration)
+						.attr('height', height);
 			} else {
 				$svg
-					.attr('height', height)
+					.attr('height', height);
 			}
 					
 			return $svg;
@@ -312,6 +322,7 @@
 				.attr("stroke-dasharray", len + " " + len)
 				.attr("stroke-dashoffset", len)
 				.transition()
+					.duration(params.transitionDuration)
 				    .attr("stroke-dashoffset", 0);
 		}
 
@@ -413,30 +424,115 @@
 		}
 
 		function getIndexesOfBallGroup($ballGroup) {			
-			var parent, index, itemPos;
+			var parent, index, itemPos, $parentObj;
 
 			var classData = $ballGroup.attr('class');
 			itemPos = classData.indexOf('item');
 
-			index = classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item','');
+			index = parseInt(classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item',''));
 
-			if (classData.indexOf('parent') > -1) {
-				itemPos = classData.indexOf('parent');
-				parent = classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item','');
+			if (classData.indexOf('layer2') > -1) {
+				//debugger;
+				$parentObj = findParentWithClass($ballGroup.node().parentNode, 'ballGroup');
+				classData = $parentObj.attr('class');
+				itemPos = classData.indexOf('item');
+				parent = parseInt(classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item',''));
+				//itemPos = classData.indexOf('parent');
+				//parent = classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item','');
 			}
 
 			return {parent: parent, i: index};
 		}
 
-		function smallBallGroupClick(d){
+		function drawAlertBox() {
+			var $box = $mainSVG
+						.append('g')
+							.classed('alertBox', true)
+							.classed('hidden', true)
+							.style('cursor', 'pointer');
+			var $textBlock = $box
+								.append('text')
+								.text(params.alertMessage)
+								.style('fill', params.alertColor)
+									.call(divideTextObjToLines, svgParams.circleL1.radius, svgParams.circleL1.fontSize);
+			//debugger;
+			var textSizes = $textBlock.node().getBoundingClientRect();
+
+			$box
+				.insert('rect', 'text')
+					.attr('x', 0)
+					.attr('y', 0)
+					.attr('rx', params.margin/2)
+					.attr('ry', params.margin/2)
+					.style('fill', params.alertBackground)
+					.style('stroke', params.alertStroke)
+					
+					.attr('width', textSizes.width + params.margin * 2)
+					.attr('height', textSizes.height + params.margin * 2);
+
+			$textBlock
+				.attr('transform', 'translate(' + params.margin + ',' + params.margin + ')');
+
+			$box
+				.on('click', function(){
+					$box
+						.attr('transform', 'translate(0,0)')
+						.classed('hidden', true);
+				});
+			return $box;
+		}
+
+		function getAlertBox() {
+			if ($mainSVG.select('.alertBox').nodes().length > 0) {
+				return $mainSVG.select('.alertBox');
+			} else {
+				return drawAlertBox();
+			}
+		}
+		function createAlertMessage($alertBox) {
+			//console.log('createAlertMessage - ', message);
+
+			//var $alertBox = getAlertBox();
+			var mousePos = d3.mouse($mainSVG.node());
+			var alertBoxSize = $alertBox.node().getBoundingClientRect();
+
+			//console.log('createAlertMessage', d3.mouse($mainSVG.node()) );
+
+			var x = Math.max(0, Math.round(mousePos[0] - alertBoxSize.width/2));
+			var y = Math.max(0, mousePos[1] - alertBoxSize.height - 10);
+
+
+			$alertBox
+				.attr('transform', 'translate(' + x + ',' + y + ')')
+				.classed('hidden', false);
+		}
+
+		function showAlert() {
+			var $alertBox = getAlertBox();
+			//debugger;
+			if ($alertBox.attr('class').indexOf('hidden') === -1) {
+				$alertBox
+					.attr('transform', 'translate(0,0)')
+					.classed('hidden', true);
+
+			} else {
+				createAlertMessage($alertBox);
+			}
+		}
+		function smallBallGroupClick(d, i){
+
 			var evt=d3.event;
 
 			evt.preventDefault();
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
+			//debugger;
+			//console.log('smallBallGroupClick - ', d3.event.target, d, i);
 
 			if (d.values !== undefined) {
 				executeBallClick(2, d);
+			} else {
+				showAlert();
 			}
 		}
 
@@ -583,8 +679,8 @@
 
 			var len = getTranslateX($parentDetailGroup) - getTranslateX($parentBallInnerGroup) - svgParams['circleL'+layer].radius - svgParams['circleL'+(layer-1)].radius;//debugger;
 
-			x1 = Math.floor(-len*0.9-svgParams['circleL'+layer].radius+ svgParams['circleL'+layer].strokeWidth);
-			x2 = Math.floor(-len*0.1-svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
+			x1 = Math.floor(-len*0.8-svgParams['circleL'+layer].radius+ svgParams['circleL'+layer].strokeWidth);
+			x2 = Math.floor(-len*0.2-svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
 
 			var lineY=0;
 
@@ -599,8 +695,8 @@
 							.attr('x1', x1)
 							.style('stroke', params.blackColor)
 							.style('stroke-width', '1px')
-							.attr('marker-start', 'url(#markerCircleL2)')
-							.attr('marker-end', 'url(#markerArrowL2)');
+							.attr('marker-start', 'url(#markerCircleL1)')
+							.attr('marker-end', 'url(#markerArrowL1)');
 
 			if (withAnimation === true) {
 				addAnimationToLine($line, Math.abs(x2-x1));
@@ -616,8 +712,8 @@
 
 			var len = getTranslateX($parentDetailGroup) - getTranslateX($parentBallInnerGroup) - svgParams['circleL'+layer].radius - svgParams['circleL'+(layer-1)].radius;//debugger;
 
-			x2 = Math.floor(len*0.95+svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
-			x1 = Math.floor(len*0.1+svgParams['circleL'+layer].radius+ svgParams['circleL'+layer].strokeWidth);
+			x2 = Math.floor(len*0.8+svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
+			x1 = Math.floor(len*0.2+svgParams['circleL'+layer].radius+ svgParams['circleL'+layer].strokeWidth);
 
 			//debugger;
 			var lineY=0;
@@ -638,8 +734,8 @@
 						.attr('x1', x1)
 						.style('stroke', params.blackColor)
 						.style('stroke-width', '1px')
-						.attr('marker-start', 'url(#markerCircleL2)')
-						.attr('marker-end', 'url(#markerCircleL2)');
+						.attr('marker-start', 'url(#markerCircleL1)')
+						.attr('marker-end', 'url(#markerCircleL1)');
 
 					if (withAnimation === true) {
 						addAnimationToLine($line, Math.abs(x2-x1));
@@ -662,7 +758,7 @@
 			var widthDetail = $detailGroup.node().getBoundingClientRect().width;
 			
 			var x1 = Math.round(svgParams.circleL2.radius*1.22);
-			var x2 = widthDetail + svgParams.circleL2.radius*1.22;
+			var x2 = widthDetail + svgParams.circleL2.radius*1.5;
 			//var x2 = Math.round(svgParams.circleL3.radius*2.8 + svgParams.circleL2.radius*2);
 
 			//console.log('********************* addRightLinesLCorrectedL2 *********************');
@@ -684,13 +780,13 @@
 									.attr('x1', x1)
 									.style('stroke', params.blackColor)
 									.style('stroke-width', '1px')
-									.attr('marker-start', 'url(#markerCircleL2)')
-									.attr('marker-end', 'url(#markerCircleL2)')
+									.attr('marker-start', 'url(#markerCircleL1)')
+									.attr('marker-end', 'url(#markerCircleL1)')
 									;
 				}				
 			});
 
-			addVertLine($parentDetailGroup, $ballGroups, Math.round(x2*1.02), 2, 'right');
+			addVertLine($parentDetailGroup, $ballGroups, x2, 2, 'right');
 		}
 
 		function removeLeftLines2($detailGroup) {
@@ -724,9 +820,11 @@
 
 			$resultBalls.on('click', smallBallGroupClick);
 
-			$detailGroup.selectAll('.innerBallGroup')
-				.on("mouseenter", ballGroupMouseOver)
-				.on("mouseleave", ballGroupMouseOut);
+			if (layer<3) {
+				$detailGroup.selectAll('.innerBallGroup')
+					.on("mouseenter", ballGroupMouseOver)
+					.on("mouseleave", ballGroupMouseOut);
+			}	
 
 			alignSmallDetailGroups($ballGroup, layer);
 
@@ -746,17 +844,30 @@
 			return $detailGroup;
 		}
 
-		function openBallGroupDetails($ballGroup, layer, dataset) {
+
+		function openBallGroupDetails($ballGroup, layer) {
 			//console.log('opening ball group', $ballGroup.attr('class'));
 			var indexes = getIndexesOfBallGroup($ballGroup);
+			var dataset;
 
-			$ballGroup.classed('active', true);
-
-			if (layer === 1) {
-				$mainSVG.selectAll('.ball_line.item'+indexes.i).classed('hidden', true);
+			if (indexes.parent === undefined) {
+				dataset = params.dataset[indexes.i].values;
+			} else {
+				dataset = params.dataset[indexes.parent].values[indexes.i].values;
 			}
 
-			createDetailsBlock(indexes, $ballGroup, layer+1, dataset);	
+			if (dataset === undefined) {
+				showAlert();
+			} else {
+
+				$ballGroup.classed('active', true);
+
+				if (layer === 1) {
+					$mainSVG.selectAll('.ball_line.item'+indexes.i).classed('hidden', true);
+				}			
+
+				createDetailsBlock(indexes, $ballGroup, layer+1, dataset);	
+			}
 		}
 
 		function defineCenterBall($group, layer) {
@@ -789,7 +900,7 @@
 				x1 = parseInt($leftLine.attr('x1'));
 				x2 = parseInt($leftLine.attr('x2'));
 
-				x1 = x1 * 1.05;
+				x1 = x1 * 1.1;
 
 				len = Math.abs(x1-x2);
 
@@ -826,7 +937,7 @@
 						.attr('stroke-dasharray', len + ' ' + len)
 						.attr('stroke-dashoffset', 0);
 
-					$rightLine.attr('marker-end', 'url(#markerArrowL3)');
+					$rightLine.attr('marker-end', 'url(#markerArrowL1)');
 					$rightLine.classed('corrected', true);
 				}
 			} 
@@ -840,7 +951,12 @@
 				if ($ballGroup.select('.centerAlign.layer3').nodes().length === 0) {
 					makeRightLonger($ballGroup.select('.centerAlign.layer2').select('.rightLine.layer2'), 2);
 				} else {
-					makeRightLonger($ballGroup.select('.centerAlign.layer3').select('.rightLine.layer3'), 3);
+
+					if ($ballGroup.select('.centerAlign.layer2').select('.centerAlign.layer3').nodes().length > 0) {
+						makeRightLonger($ballGroup.select('.centerAlign.layer2').select('.centerAlign.layer3').select('.rightLine.layer3'), 3);
+					} else {
+						makeRightLonger($ballGroup.select('.centerAlign.layer2').select('.rightLine.layer2'), 2);
+					}
 				}
 			}
 
@@ -921,6 +1037,32 @@
 			//console.log('correctVertLines - x - ', x, dataForVert.min, dataForVert.max, layer);
 		}
 
+		function centerDetailGroupFinal($detailGrop) {
+			var detailGroupWidth, diff, x, y, leftLineWIdth
+
+			if ($detailGrop.nodes().length > 0) {
+				detailGroupWidth = $detailGrop.node().getBoundingClientRect().width;
+
+				//debugger;
+				diff = Math.round((svgParams.baseCircleDist - detailGroupWidth - svgParams.circleL1.radius*2)/2);
+
+				if ($detailGrop.selectAll('.detailGroup').nodes().length === 0) {
+					x = diff + detailGroupWidth/2 + svgParams.circleL1.radius;
+				} else {
+					leftLineWIdth = $detailGrop.selectAll('.layer2.centerAlign').selectAll('.innerBallGroup').select('.leftLine').node().getBoundingClientRect().width*1.4;
+					
+					x = svgParams.circleL1.radius + svgParams.circleL2.radius + diff + leftLineWIdth;
+				}
+
+
+
+				y = getTranslateY($detailGrop);
+				$detailGrop
+					.attr('transform', 'translate(' + x + ' , ' + y + ')');
+
+			}
+		}
+
 		function centerBigBallsInGroups(layer) {
 			var $balls = $mainSVG.selectAll('.layer' + layer + '.ballGroup');
 
@@ -956,6 +1098,9 @@
 
 					//makeMiddleLineLonger($ballGroupForAligning, i, arr, layer+1);
 					makeMiddleLineLonger($ballGroup);
+
+					centerDetailGroupFinal($ballGroup.select('.detailGroup.layer2'));
+					
 				}
 			});	
 
@@ -998,30 +1143,39 @@
 		}
 
 		function executeBallClick(layer, d) {
-			var evt=d3.event;
+			var evt=d3.event, indexes;
 
 			evt.preventDefault();
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
 
-			$chartDom.on('click')();
-
-			var $ballGroup = findParentWithClass(evt.target, 'ballGroup');
-
-			if ($ballGroup.attr('class').indexOf('active') > -1) {
-				closeBallGroupDetails($ballGroup, layer);
-			} else {
-				openBallGroupDetails($ballGroup, layer, d.values);
+			var $ballGroup = d3.select(evt.target);
+			if ($ballGroup.attr('class').indexOf('.ballGroup') === -1) {
+				$ballGroup = findParentWithClass(evt.target, 'ballGroup');
 			}
-			//debugger;
-			centerBigBallsInGroups(layer);
+			
+			//console.log('executeBallClick - ', d3.event.target, $ballGroup.attr('class'));
+			if (layer<3 && ($ballGroup.attr('class').indexOf('layer1')>1 || $ballGroup.attr('class').indexOf('layer2') > -1) ) {
 
-			if (layer-1>0) {
-				centerBigBallsInGroups(layer-1);
+				if ($ballGroup.attr('class').indexOf('active') > -1) {
+					closeBallGroupDetails($ballGroup, layer);
+				} else {
+					//console.log('openBallGroupDetails', layer, evt.target, $ballGroup.attr('class'));
+					//indexes = getIndexesOfBallGroup($ballGroup);
+					//console.log('openBallGroupDetails - ', indexes);
+					openBallGroupDetails($ballGroup, layer, d.values);
+				}
+				//debugger;
+				centerBigBallsInGroups(layer);
+
+				if (layer-1>0) {
+					centerBigBallsInGroups(layer-1);
+				}
+
+				centerDetailGroups();
+				checkSVGHeight(true);
+				$chartDom.on('click')();
 			}
-
-			centerDetailGroups();
-			checkSVGHeight(true);
 		}
 
 		function bigBallGroupClick(d){
@@ -1060,14 +1214,17 @@
 			$element
 				.selectAll('circle')
 				.transition()
+					//.duration(params.transitionDuration)
 				    .style("stroke", darkerColor);
 			$element
 				.selectAll('.ball_value')
 				.attr('transform', 'translate(0, 0)')
 				.transition()
+					//.duration(params.transitionDuration)
 					.style("fill", darkerColor)
 					.attr('transform', 'translate(0, -10)')
 				.transition()
+					//.duration(params.transitionDuration)
 					.attr('transform', 'translate(0, 0)')
 				;
 		}
@@ -1137,6 +1294,7 @@
 			$mainSVG.selectAll('.ballGroup').classed('active', false);
 			$mainSVG.selectAll('.ball_line').classed('hidden', false);
 
+			getAlertBox().classed('hidden', true);
 			checkSVGHeight(true);
 
 			return $chartDom;
@@ -1158,3 +1316,4 @@
 	};
 
 }());
+

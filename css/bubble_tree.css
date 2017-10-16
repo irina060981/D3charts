@@ -6,7 +6,7 @@ body {
 	width: 98%;
 	margin: 10px auto;
 	//max-width: 1400px;
-	min-width: 800px;
+	min-width: 1200px;
 	background: #fff;
 	overflow: hidden;
 	color: #415559;
@@ -61,7 +61,7 @@ body {
 	stroke-width: 1px;
 }
 
-line.hidden {
+.hidden {
 	opacity: 0;
 }
 

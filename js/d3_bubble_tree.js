@@ -24,16 +24,10 @@
     		alertBackground: '#ff0090',
     		alertColor: '#fff',
     		alertStroke: d3.color('#ff0090').darker(1)
-    		/*
-    		minFontSize: 6,
-    		labelDistanceKoef: 1.8,
-    		animDur: 200,
-    		betweenGroupsKoef: 1.2*/
     	};
 
 		function getTranslateX($object) {
 			var attr, checkSymbol;
-			//debugger;
 			if ($object !== null && $object.attr('transform') !== null ) {
 				attr= $object.attr('transform').replace('translate(','').replace(')','').trim();
 				if (attr.indexOf(',') > 0) {
@@ -99,7 +93,7 @@
 			circleRL3 = Math.round(circleRL2*0.65);
 			//debugger;
 			fontSizeL1 = params.circleRL1_font_size || Math.max(Math.min(Math.round(circleRL1/3), params.maxFontSize), params.minFontSize);
-			fontSizeL2 = params.circleRL2_font_size || ath.max(Math.min(Math.round(circleRL2/3), params.maxFontSize), params.minFontSize);
+			fontSizeL2 = params.circleRL2_font_size || Math.max(Math.min(Math.round(circleRL2/3), params.maxFontSize), params.minFontSize);
 			fontSizeL3 = Math.max(Math.min(Math.round(circleRL3/3), params.maxFontSize), params.minFontSize);
 
 			height = circleRL1*2 + 2*params.margin + fontSizeL1*2;
@@ -199,7 +193,6 @@
 							;
 			
 			setSVGSize($mainSVG, svgParams.width, svgParams.height);
-
 
 			addMarkersDefinition();		
 		}
@@ -370,13 +363,11 @@
 		}
 
 		function removeVertLine($ballGroup) {
-			//debugger;
 			var $detailGroup = d3.select($ballGroup.node().parentNode);
 			$detailGroup.selectAll('.vertLine.layer2').remove();
 		}
 
 		function closeBallGroupDetails($ballGroup, layer) {
-			//console.log('closing ball group', $ballGroup.attr('class'));
 			var xRightVL, xLeftVL;
 			var $parentDetailGroup, $ballGroups;
 
@@ -417,10 +408,6 @@
 					addRightLinesLCorrectedL2($ballGroups, $ballGroups.select('.detailGroup'));
 				}
 			} 
-
-			/*addVertLine($parentDetailGroup, $ballGroups, xLeftVL, 2, 'left');
-			addVertLine($parentDetailGroup, $ballGroups, xRightVL, 2, 'right');*/
-
 		}
 
 		function getIndexesOfBallGroup($ballGroup) {			
@@ -432,13 +419,11 @@
 			index = parseInt(classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item',''));
 
 			if (classData.indexOf('layer2') > -1) {
-				//debugger;
+
 				$parentObj = findParentWithClass($ballGroup.node().parentNode, 'ballGroup');
 				classData = $parentObj.attr('class');
 				itemPos = classData.indexOf('item');
 				parent = parseInt(classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item',''));
-				//itemPos = classData.indexOf('parent');
-				//parent = classData.substr(itemPos, classData.indexOf(' ', itemPos)).replace('item','');
 			}
 
 			return {parent: parent, i: index};
@@ -462,13 +447,13 @@
 				.insert('rect', 'text')
 					.attr('x', 0)
 					.attr('y', 0)
-					.attr('rx', params.margin/2)
-					.attr('ry', params.margin/2)
+					.attr('rx', Math.round(params.margin/2))
+					.attr('ry', Math.round(params.margin/2))
 					.style('fill', params.alertBackground)
 					.style('stroke', params.alertStroke)
 					
-					.attr('width', textSizes.width + params.margin * 2)
-					.attr('height', textSizes.height + params.margin * 2);
+					.attr('width', Math.round(textSizes.width + params.margin * 2))
+					.attr('height', Math.round(textSizes.height + params.margin * 2));
 
 			$textBlock
 				.attr('transform', 'translate(' + params.margin + ',' + params.margin + ')');
@@ -490,17 +475,11 @@
 			}
 		}
 		function createAlertMessage($alertBox) {
-			//console.log('createAlertMessage - ', message);
-
-			//var $alertBox = getAlertBox();
 			var mousePos = d3.mouse($mainSVG.node());
 			var alertBoxSize = $alertBox.node().getBoundingClientRect();
 
-			//console.log('createAlertMessage', d3.mouse($mainSVG.node()) );
-
 			var x = Math.max(0, Math.round(mousePos[0] - alertBoxSize.width/2));
 			var y = Math.max(0, mousePos[1] - alertBoxSize.height - 10);
-
 
 			$alertBox
 				.attr('transform', 'translate(' + x + ',' + y + ')')
@@ -509,7 +488,6 @@
 
 		function showAlert() {
 			var $alertBox = getAlertBox();
-			//debugger;
 			if ($alertBox.attr('class').indexOf('hidden') === -1) {
 				$alertBox
 					.attr('transform', 'translate(0,0)')
@@ -520,14 +498,11 @@
 			}
 		}
 		function smallBallGroupClick(d, i){
-
 			var evt=d3.event;
 
 			evt.preventDefault();
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
-			//debugger;
-			//console.log('smallBallGroupClick - ', d3.event.target, d, i);
 
 			if (d.values !== undefined) {
 				executeBallClick(2, d);
@@ -544,7 +519,7 @@
 
 				newHeight = $group.node().getBoundingClientRect().height;
 				newYEnd = newHeight + getTranslateY($group);
-				//debugger;
+
 				while($correctedGroup.node().nextSibling !== null) {
 					$correctedGroup = d3.select($correctedGroup.node().nextSibling);
 
@@ -626,13 +601,11 @@
 
 		function findStartVertLine($ballGroups, checkInner, checkParent, checkLayer) {
 			var minY=1000000000000000, maxY=0;
-			//console.log('********', $ballGroups.attr('class'),'**********************');
+
 			$ballGroups.each(function(item, index){
 				var $group = d3.select(this);
 				var curY = getTranslateY($group);
 
-				//console.log(index, 'findStartVertLine before check inner', curY);
-				//debugger;
 				if (checkInner === true) {
 					curY = curY + getTranslateY($group.select('.innerBallGroup'));
 				}
@@ -641,13 +614,10 @@
 					curY = curY + getTranslateY(d3.select($group.node().parentNode.parentNode));
 				}
 
-				//console.log(index, 'findStartVertLine after checkParent', curY, $group.attr('class'), 'layer'+checkLayer);
-
 				minY = Math.min(minY, curY);
 				maxY = Math.max(maxY, curY);
 
 			});
-			//debugger;
 			return {min: minY, max: maxY, len: maxY-minY};
 		}
 
@@ -715,13 +685,12 @@
 			x2 = Math.floor(len*0.8+svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
 			x1 = Math.floor(len*0.2+svgParams['circleL'+layer].radius+ svgParams['circleL'+layer].strokeWidth);
 
-			//debugger;
 			var lineY=0;
 
 			$ballGroups.each(function(){
 				var $line;
 				var $ballGroup = d3.select(this);
-				//debugger;
+
 				if ($ballGroup.attr('class').indexOf('active') === -1 && $ballGroup.selectAll('.innerBallGroup.layer'+layer).selectAll('.rightLine').nodes().length === 0) {
 					$line = $ballGroup
 					.selectAll('.innerBallGroup.layer'+layer)
@@ -752,17 +721,12 @@
 		function addRightLinesLCorrectedL2($ballGroups, $detailGroup) {
 			var dataForVert = findStartVertLine($ballGroups);
 
-			//var x2 = $ballGroups.select('.detailGroup').attr('x2');
 			var $parentDetailGroup = d3.select($ballGroups.node().parentNode);
 
 			var widthDetail = $detailGroup.node().getBoundingClientRect().width;
 			
 			var x1 = Math.round(svgParams.circleL2.radius*1.22);
-			var x2 = widthDetail + svgParams.circleL2.radius*1.5;
-			//var x2 = Math.round(svgParams.circleL3.radius*2.8 + svgParams.circleL2.radius*2);
-
-			//console.log('********************* addRightLinesLCorrectedL2 *********************');
-			//console.log('widthDetail - ', widthDetail);
+			var x2 = Math.round(widthDetail + svgParams.circleL2.radius*1.5);
 
 			$ballGroups.each(function(){
 				var $ballGroup = d3.select(this);
@@ -846,7 +810,6 @@
 
 
 		function openBallGroupDetails($ballGroup, layer) {
-			//console.log('opening ball group', $ballGroup.attr('class'));
 			var indexes = getIndexesOfBallGroup($ballGroup);
 			var dataset;
 
@@ -925,9 +888,9 @@
 					x2 = parseInt($rightLine.attr('x2'));
 
 					if (layer === 2) {
-						x2 = x2 * 1.02;	
+						x2 = Math.round(x2 * 1.02);	
 					} else {
-						x2 = x2 * 1.2;
+						x2 = Math.round(x2 * 1.2);
 					}
 					
 					len = Math.abs(x1-x2);
@@ -944,7 +907,6 @@
 		}
 
 		function makeMiddleLineLonger($ballGroup) {
-			//debugger;
 			if ($ballGroup.select('.centerAlign.layer2').nodes().length > 0) {
 				makeLeftLonger($ballGroup.select('.centerAlign.layer2').select('.leftLine.layer2'));
 				//debugger;
@@ -959,61 +921,7 @@
 					}
 				}
 			}
-
 		}
-
-		/*function makeMiddleLineLonger($ballGroupForAligning, i, arr, layer) {
-			var $leftLine, $rightLine, x1, x2, len;
-
-			//console.log('1makeMiddleLineLonger', layer, $ballGroupForAligning.node(), i, arr.length);
-
-			$leftLine = $ballGroupForAligning.select('.leftLine.layer'+layer);
-			//console.log('$leftLine - ', $leftLine);
-
-			if ($leftLine.node() !== null && $leftLine.attr('class').indexOf('corrected') === -1) {
-				x1 = parseInt($leftLine.attr('x1'));
-				x2 = parseInt($leftLine.attr('x2'));
-
-				x1 = x1 * 1.05;
-
-				len = Math.abs(x1-x2);
-
-				$leftLine
-					.attr('x1', x1)
-					.attr('stroke-dasharray', len + ' ' + len)
-					.attr('stroke-dashoffset', 0);
-
-				$leftLine.classed('corrected', true);
-			}
-
-			$rightLine = $ballGroupForAligning.select('.rightLine.layer'+layer);
-			//debugger;
-			if ($rightLine.node() !== null && $rightLine.attr('class').indexOf('corrected') === -1) {
-				
-				//console.log('2 makeMiddleLineLonger correct');
-
-				if (i< arr.length-1) {
-					x1 = parseInt($leftLine.attr('x1'));
-					x2 = parseInt($rightLine.attr('x2'));
-
-					if (layer === 2) {
-						x2 = x2 * 1.02;	
-					} else {
-						x2 = x2 * 1.2;
-					}
-					
-					len = Math.abs(x1-x2);
-
-					$rightLine
-						.attr('x2', x2)
-						.attr('stroke-dasharray', len + ' ' + len)
-						.attr('stroke-dashoffset', 0);
-
-					$rightLine.attr('marker-end', 'url(#markerArrowL3)');
-					$rightLine.classed('corrected', true);
-				}
-			} 			
-		}*/
 
 		function correctVertLines($detailGroup, layer) {
 			var $leftVertLine = $detailGroup.selectAll('.vertLine.left.layer'+layer);
@@ -1024,7 +932,6 @@
 			$leftVertLine
 				.attr('y1', dataForVert.min)
 				.attr('y2', dataForVert.max);
-			//console.log('correctVertLines - x - ', x, dataForVert.min, dataForVert.max, layer);
 
 			var $rightVertLine = $detailGroup.selectAll('.vertLine.right.layer'+layer);
 			x = $rightVertLine.attr('x1');
@@ -1033,8 +940,6 @@
 			$rightVertLine
 				.attr('y1', dataForVert.min)
 				.attr('y2', dataForVert.max);
-
-			//console.log('correctVertLines - x - ', x, dataForVert.min, dataForVert.max, layer);
 		}
 
 		function centerDetailGroupFinal($detailGrop) {
@@ -1043,7 +948,6 @@
 			if ($detailGrop.nodes().length > 0) {
 				detailGroupWidth = $detailGrop.node().getBoundingClientRect().width;
 
-				//debugger;
 				diff = Math.round((svgParams.baseCircleDist - detailGroupWidth - svgParams.circleL1.radius*2)/2);
 
 				if ($detailGrop.selectAll('.detailGroup').nodes().length === 0) {
@@ -1053,8 +957,6 @@
 					
 					x = svgParams.circleL1.radius + svgParams.circleL2.radius + diff + leftLineWIdth;
 				}
-
-
 
 				y = getTranslateY($detailGrop);
 				$detailGrop
@@ -1154,18 +1056,14 @@
 				$ballGroup = findParentWithClass(evt.target, 'ballGroup');
 			}
 			
-			//console.log('executeBallClick - ', d3.event.target, $ballGroup.attr('class'));
 			if (layer<3 && ($ballGroup.attr('class').indexOf('layer1')>1 || $ballGroup.attr('class').indexOf('layer2') > -1) ) {
 
 				if ($ballGroup.attr('class').indexOf('active') > -1) {
 					closeBallGroupDetails($ballGroup, layer);
 				} else {
-					//console.log('openBallGroupDetails', layer, evt.target, $ballGroup.attr('class'));
-					//indexes = getIndexesOfBallGroup($ballGroup);
-					//console.log('openBallGroupDetails - ', indexes);
 					openBallGroupDetails($ballGroup, layer, d.values);
 				}
-				//debugger;
+
 				centerBigBallsInGroups(layer);
 
 				if (layer-1>0) {
@@ -1201,32 +1099,42 @@
 
 		function ballGroupMouseOver(){
 			var evt=d3.event;
+			var circleColor, darkerColor;
 
 			evt.preventDefault();
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
 
 			var $element=d3.select(d3.event.target);
+			//debugger;
+			var indexes = getIndexesOfBallGroup(findParentWithClass($element.node(),'ballGroup'));
+			var dataset;
 
-			var circleColor = $element.selectAll('circle').attr('data-color');
-			var darkerColor = d3.color(circleColor).darker(1);
+			if (indexes.parent === undefined) {
+				dataset = params.dataset[indexes.i].values;
+			} else {
+				dataset = params.dataset[indexes.parent].values[indexes.i].values;
+			}
 
-			$element
-				.selectAll('circle')
-				.transition()
-					//.duration(params.transitionDuration)
-				    .style("stroke", darkerColor);
-			$element
-				.selectAll('.ball_value')
-				.attr('transform', 'translate(0, 0)')
-				.transition()
-					//.duration(params.transitionDuration)
-					.style("fill", darkerColor)
-					.attr('transform', 'translate(0, -10)')
-				.transition()
-					//.duration(params.transitionDuration)
+			if (dataset !== undefined) {
+
+				circleColor = $element.selectAll('circle').attr('data-color');
+				darkerColor = d3.color(circleColor).darker(1);
+
+				$element
+					.selectAll('circle')
+					.transition()
+					    .style("stroke", darkerColor);
+				$element
+					.selectAll('.ball_value')
 					.attr('transform', 'translate(0, 0)')
-				;
+					.transition()
+						.style("fill", darkerColor)
+						.attr('transform', 'translate(0, -10)')
+					.transition()
+						.attr('transform', 'translate(0, 0)')
+					;
+			}
 		}
 
 		function addBigBallsInLine($group) {

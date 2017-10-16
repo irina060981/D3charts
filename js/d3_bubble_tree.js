@@ -11,7 +11,7 @@
 
     	var defaultParams={
     		margin: 20,
-    		maxRadius: 64,
+    		maxRadius: 50,
     		blackColor: '#415559',
     		maxFontSize: 16,
     		minFontSize: 5
@@ -599,8 +599,8 @@
 							.attr('x1', x1)
 							.style('stroke', params.blackColor)
 							.style('stroke-width', '1px')
-							.attr('marker-start', 'url(#markerCircleL3)')
-							.attr('marker-end', 'url(#markerArrowL3)');
+							.attr('marker-start', 'url(#markerCircleL2)')
+							.attr('marker-end', 'url(#markerArrowL2)');
 
 			if (withAnimation === true) {
 				addAnimationToLine($line, Math.abs(x2-x1));
@@ -616,7 +616,7 @@
 
 			var len = getTranslateX($parentDetailGroup) - getTranslateX($parentBallInnerGroup) - svgParams['circleL'+layer].radius - svgParams['circleL'+(layer-1)].radius;//debugger;
 
-			x2 = Math.floor(len*0.9+svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
+			x2 = Math.floor(len*0.95+svgParams['circleL'+layer].radius- svgParams['circleL'+layer].strokeWidth);
 			x1 = Math.floor(len*0.1+svgParams['circleL'+layer].radius+ svgParams['circleL'+layer].strokeWidth);
 
 			//debugger;
@@ -638,8 +638,8 @@
 						.attr('x1', x1)
 						.style('stroke', params.blackColor)
 						.style('stroke-width', '1px')
-						.attr('marker-start', 'url(#markerCircleL3)')
-						.attr('marker-end', 'url(#markerCircleL3)');
+						.attr('marker-start', 'url(#markerCircleL2)')
+						.attr('marker-end', 'url(#markerCircleL2)');
 
 					if (withAnimation === true) {
 						addAnimationToLine($line, Math.abs(x2-x1));
@@ -665,8 +665,8 @@
 			var x2 = widthDetail + svgParams.circleL2.radius*1.22;
 			//var x2 = Math.round(svgParams.circleL3.radius*2.8 + svgParams.circleL2.radius*2);
 
-			console.log('********************* addRightLinesLCorrectedL2 *********************');
-			console.log('widthDetail - ', widthDetail);
+			//console.log('********************* addRightLinesLCorrectedL2 *********************');
+			//console.log('widthDetail - ', widthDetail);
 
 			$ballGroups.each(function(){
 				var $ballGroup = d3.select(this);
@@ -684,13 +684,13 @@
 									.attr('x1', x1)
 									.style('stroke', params.blackColor)
 									.style('stroke-width', '1px')
-									.attr('marker-start', 'url(#markerCircleL3)')
-									.attr('marker-end', 'url(#markerCircleL3)')
+									.attr('marker-start', 'url(#markerCircleL2)')
+									.attr('marker-end', 'url(#markerCircleL2)')
 									;
 				}				
 			});
 
-			addVertLine($parentDetailGroup, $ballGroups, x2, 2, 'right');
+			addVertLine($parentDetailGroup, $ballGroups, Math.round(x2*1.02), 2, 'right');
 		}
 
 		function removeLeftLines2($detailGroup) {

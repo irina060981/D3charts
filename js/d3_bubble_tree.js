@@ -59,7 +59,8 @@
 				if (checkSymbol !== undefined) {
 					return parseInt(attr.substr(checkSymbol+1));
 				} else {
-					return parseInt(attr);
+					//return parseInt(attr);
+					return 0;
 				}
 			}
 			
@@ -665,7 +666,7 @@
 							.attr('x1', x1)
 							.style('stroke', params.blackColor)
 							.style('stroke-width', '1px')
-							.attr('marker-start', 'url(#markerCircleL1)')
+							//.attr('marker-start', 'url(#markerCircleL1)')
 							.attr('marker-end', 'url(#markerArrowL1)');
 
 			if (withAnimation === true) {
@@ -726,7 +727,7 @@
 			var widthDetail = $detailGroup.node().getBoundingClientRect().width;
 			
 			var x1 = Math.round(svgParams.circleL2.radius*1.22);
-			var x2 = Math.round(widthDetail + svgParams.circleL2.radius*1.5);
+			var x2 = Math.round(widthDetail + svgParams.circleL2.radius*1.59);
 
 			$ballGroups.each(function(){
 				var $ballGroup = d3.select(this);
@@ -943,28 +944,49 @@
 		}
 
 		function centerDetailGroupFinal($detailGrop) {
-			var detailGroupWidth, diff, x, y, leftLineWIdth
+			var detailGroupWidth, diff, x, y, leftLineWIdth, len1, len2, len11, len22, $objLeftLine, $objRightLine, $objCenter;
 
+			console.log('************************ centerDetailGroupFinal *****************************');
 			if ($detailGrop.nodes().length > 0) {
 				detailGroupWidth = $detailGrop.node().getBoundingClientRect().width;
 
 				diff = Math.round((svgParams.baseCircleDist - detailGroupWidth - svgParams.circleL1.radius*2)/2);
 
 				if ($detailGrop.selectAll('.detailGroup').nodes().length === 0) {
-					x = diff + detailGroupWidth/2 + svgParams.circleL1.radius;
+					x =Math.round(diff + detailGroupWidth/2 + svgParams.circleL1.radius);
+					//console.log('1 centerDetailGroupFinal', x, y);
 				} else {
-
+					//debugger;
 					if ($detailGrop.selectAll('.layer2.centerAlign').nodes().length >0) {
-						leftLineWIdth = $detailGrop.selectAll('.layer2.centerAlign').selectAll('.innerBallGroup').select('.leftLine').node().getBoundingClientRect().width*1.4;
+						
+						$objCenter = $detailGrop.selectAll('.layer2.centerAlign').selectAll('.innerBallGroup').select('.leftLine');
+						len1 = $objCenter.node().getBoundingClientRect().width;
+						len11 = Math.abs(parseInt($objCenter.attr('x1'))-parseInt($objCenter.attr('x2')));
+
+						leftLineWIdth = len11*1.4;
 					} else {
-						leftLineWIdth = $detailGrop.select('.layer2').selectAll('.innerBallGroup').select('.leftLine').node().getBoundingClientRect().width*1.4;
-						leftLineWIdth = leftLineWIdth + $detailGrop.selectAll('.simplyMiddle.layer2.rightLine').node().getBoundingClientRect().width*1.4;
+						$objLeftLine = $detailGrop.select('.leftLine.layer3');
+
+						len1 = $objLeftLine.node().getBoundingClientRect().width;
+						len11 = Math.abs(parseInt($objLeftLine.attr('x1'))-parseInt($objLeftLine.attr('x2')));
+
+						$objRightLine = $detailGrop.select('.simplyMiddle.layer2.rightLine');
+						len2 = $objRightLine.node().getBoundingClientRect().width;
+						len22 = Math.abs(parseInt($objRightLine.attr('x1'))-parseInt($objRightLine.attr('x2')));
+
+						//console.log('len1', len1, len11);
+						//console.log('len2', len2, len22);
+						leftLineWIdth = len11*1.4 + len22*1.4;
+						//leftLineWIdth = leftLineWIdth + $detailGrop.selectAll('.simplyMiddle.layer2.rightLine').node().getBoundingClientRect().width*1.4;
 					}
 					
-					x = svgParams.circleL1.radius + svgParams.circleL2.radius + diff + leftLineWIdth;
+					x = Math.round(svgParams.circleL1.radius + svgParams.circleL2.radius + diff + leftLineWIdth);
+					//console.log('2 centerDetailGroupFinal', x, y);
 				}
 
 				y = getTranslateY($detailGrop);
+				//console.log('3 centerDetailGroupFinal', x, y);
+
 				$detailGrop
 					.attr('transform', 'translate(' + x + ' , ' + y + ')');
 
@@ -1011,11 +1033,14 @@
 			if (layer ===2) {
 				$rightLine = $ballGroup.select('.vertLine.right.layer'+layer);
 				y = Math.round($rightLine.node().getBoundingClientRect().height/2);
+
+				console.log('rightline y - ', y, $rightLine.node().getBoundingClientRect().height);
 			} else {
 				y = Math.round($leftLine.node().getBoundingClientRect().height/2);
+				console.log('leftLine y - ', y, $leftLine.node().getBoundingClientRect().height);
 			}
 
-			y = y + Math.round((svgParams.circleL2.radius)/2);
+			//y = y + Math.round((svgParams.circleL2.radius)/2);
 			xLeft = $leftLine.attr('x1');
 
 			var $detailGroup = $ballGroup.select('.detailGroup.layer'+layer);
@@ -1077,11 +1102,11 @@
 					$allBallGroups = $ballGroup.select('.detailGroup').selectAll('.ballGroup.layer'+(layer+1));
 
 					if ($allBallGroups.nodes().length % 2 !== 0) {
-						console.log('nechetnoye', $allBallGroups.nodes().length);
+						//console.log('nechetnoye', $allBallGroups.nodes().length);
 						placeOddBalls($ballGroup, layer);
 						makeMiddleLineLonger($ballGroup);
 					} else {
-						console.log('chetnoye', $allBallGroups.nodes().length);
+						//console.log('chetnoye', $allBallGroups.nodes().length);
 						placeEvenBalls($ballGroup, layer);
 						//$ballGroup.selectAll('.simplyMiddle').remove();
 						addLayerMiddleLines($ballGroup, layer+1);
@@ -1116,6 +1141,8 @@
 				var diff = maxY - thisY;
 
 				var groupX = getTranslateX($parentGroup);
+				//debugger;
+				//console.log('parentGroup-', $parentGroup.node());
 				$parentGroup.attr('transform', 'translate(' + groupX + ',' + diff + ')');
 				
 			});

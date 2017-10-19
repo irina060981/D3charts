@@ -725,9 +725,29 @@
 			var $parentDetailGroup = d3.select($ballGroups.node().parentNode);
 
 			var widthDetail = $detailGroup.node().getBoundingClientRect().width;
-			
-			var x1 = Math.round(svgParams.circleL2.radius*1.22);
-			var x2 = Math.round(widthDetail + svgParams.circleL2.radius*1.59);
+
+			var $rightLine = $detailGroup.select('.rightLine');
+
+			var rightLineData = $rightLine.node().getBoundingClientRect();
+			var ballData = $ballGroups.node().getBoundingClientRect()
+			//console.log('****************** addRightLinesLCorrectedL2 ***********************');
+			//console.log('lineData - ', rightLineData);
+			//console.log('ballData - ', ballData);
+			//debugger;
+			var x1 = Math.round(svgParams.circleL2.radius+10);
+			//var x2 = Math.round(widthDetail + svgParams.circleL2.radius+10);
+
+			//var arg1 = Math.abs( parseInt($rightLine.attr('x2'))-parseInt($rightLine.attr('x1')));
+			var arg2 = Math.ceil(rightLineData.right);
+			var arg3 = Math.ceil(ballData.right);
+
+			var x2 = Math.ceil(svgParams.circleL2.radius + arg2 - arg3);
+			//console.log('right Value- ', arg2, arg3, x2);//, Math.round(widthDetail + svgParams.circleL2.radius+10));
+			var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+			//console.log('isIE', isIE);
+			if (isIE === true) {
+				x2 = x2+2;
+			}
 
 			$ballGroups.each(function(){
 				var $ballGroup = d3.select(this);
@@ -781,7 +801,7 @@
 
 			var $resultBalls = drawValueBall($detailGroup, svgParams['circleL'+layer], layer, dataset);
 
-			placeCenterBallGroup($detailGroup, layer);//, $detailGroup.node().previousSibling, $detailGroup.node().parentNode.nextSibling);
+			placeCenterBallGroup($detailGroup, layer);
 
 			$resultBalls.on('click', smallBallGroupClick);
 
@@ -946,7 +966,7 @@
 		function centerDetailGroupFinal($detailGrop) {
 			var detailGroupWidth, diff, x, y, leftLineWIdth, len1, len2, len11, len22, $objLeftLine, $objRightLine, $objCenter;
 
-			console.log('************************ centerDetailGroupFinal *****************************');
+			//console.log('************************ centerDetailGroupFinal *****************************');
 			if ($detailGrop.nodes().length > 0) {
 				detailGroupWidth = $detailGrop.node().getBoundingClientRect().width;
 
@@ -1019,7 +1039,22 @@
 			var groupHeight = $detailGroup.node().getBoundingClientRect().height;
 
 			groupX = getTranslateX($ballGroup.select('.innerBallGroup'));
-			groupY = Math.round(groupHeight/2-svgParams['circleL'+layer].radius)+svgParams['circleL'+layer].fontSize;
+			groupY = Math.round(groupHeight/2-svgParams['circleL'+layer].radius);
+
+			var $innerBalls = $detailGroup.selectAll('.ballGroup.layer'+(layer+1));
+			var minY = 10000, maxY = 0;
+			//debugger;
+			$innerBalls.each(function(){
+				//debugger;
+				var $innerBall = d3.select(this);
+				var y = getTranslateY($innerBall);
+
+				minY = Math.min(minY, y);
+				maxY = Math.max(maxY, y);
+			});
+			//console.log('placeEvenBalls - ', cntBalls);
+
+			groupY = Math.round((maxY-minY)/2);
 
 			$ballGroup.select('.innerBallGroup')
 				.attr('transform', 'translate('  + groupX + ',' + groupY + ')');
@@ -1034,10 +1069,10 @@
 				$rightLine = $ballGroup.select('.vertLine.right.layer'+layer);
 				y = Math.round($rightLine.node().getBoundingClientRect().height/2);
 
-				console.log('rightline y - ', y, $rightLine.node().getBoundingClientRect().height);
+				//console.log('rightline y - ', y, $rightLine.node().getBoundingClientRect().height);
 			} else {
 				y = Math.round($leftLine.node().getBoundingClientRect().height/2);
-				console.log('leftLine y - ', y, $leftLine.node().getBoundingClientRect().height);
+				//console.log('leftLine y - ', y, $leftLine.node().getBoundingClientRect().height);
 			}
 
 			//y = y + Math.round((svgParams.circleL2.radius)/2);
@@ -1089,6 +1124,7 @@
 				var $allBallGroups;
 				var $ballGroup = d3.select(this);
 
+				//debugger;
 
 				if ($ballGroup.attr('class').indexOf('active') === -1) {
 			
@@ -1124,8 +1160,9 @@
 
 		function centerDetailGroups() {
 			var maxY=0;
-
+			//debugger;
 			$mainSVG.selectAll('.layer1.ballGroup').selectAll('.innerBallGroup.layer1').each(function(){
+				//debugger;
 				var $ballGroup = d3.select(this);
 
 				var thisY = getTranslateY($ballGroup);
